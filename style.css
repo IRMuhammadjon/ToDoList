@@ -61,6 +61,21 @@ h1 {
     transition: all 0.3s ease;
 }
 
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.sheet-selector {
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    min-width: 180px;
+    background: white;
+}
+
 .btn-danger {
     background: #e74c3c;
     color: white;

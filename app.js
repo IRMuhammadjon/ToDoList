@@ -1,13 +1,15 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbyFoD2iRpM0svaHLYJp0tUMl8kAfIHUa5eQBG7Ey0-nwHTUY6WpAvu7IQ0YGt5CwwuScQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxRHDpud-K76lEgDxoWyFYAdjRMta0k-mwVPUfd525TUfnZpCW8RBx9bfi8gOCkKqbtvw/exec';
 
 let allTasks = [];
 let filteredTasks = [];
 let currentPage = 1;
 const tasksPerPage = 10;
 let editingTaskId = null;
+let currentSheet = '';
+let allSheets = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadTasks();
+    loadSheets();
     setupEvents();
 });
 
@@ -22,18 +24,62 @@ function setupEvents() {
     });
     document.getElementById('priorityFilter').addEventListener('change', handleSearch);
     
+    // Sheet events
+    document.getElementById('createSheetBtn').addEventListener('click', openSheetModal);
+    document.getElementById('closeSheetModal').addEventListener('click', closeSheetModal);
+    document.getElementById('cancelSheetBtn').addEventListener('click', closeSheetModal);
+    document.getElementById('sheetForm').addEventListener('submit', handleSheetSubmit);
+    document.getElementById('sheetSelector').addEventListener('change', handleSheetChange);
+    
     window.addEventListener('click', function(e) {
         if (e.target === document.getElementById('taskModal')) {
             closeModal();
         }
+        if (e.target === document.getElementById('sheetModal')) {
+            closeSheetModal();
+        }
     });
 }
 
+// Load sheets first
+function loadSheets() {
+    window.handleResponse = function(data) {
+        allSheets = data || [];
+        populateSheetSelector();
+        
+        // Load first sheet by default
+        if (allSheets.length > 0) {
+            currentSheet = allSheets[0].name;
+            document.getElementById('sheetSelector').value = currentSheet;
+            loadTasks();
+        }
+        
+        // Clean up
+        document.head.removeChild(script);
+        delete window.handleResponse;
+    };
+    
+    const script = document.createElement('script');
+    script.src = API_URL + '?action=getSheets&callback=handleResponse';
+    script.onerror = function() {
+        showMessage('Sheet listini yuklab bolmadi', 'error');
+        document.head.removeChild(script);
+        delete window.handleResponse;
+    };
+    
+    document.head.appendChild(script);
+}
+
 function loadTasks() {
+    if (!currentSheet) {
+        showMessage('Iltimos sheet tanlang', 'error');
+        return;
+    }
+    
     showLoading(true);
     
     // JSONP callback function
-    window.handleTasksResponse = function(data) {
+    window.handleResponse = function(data) {
         allTasks = data || [];
         filteredTasks = allTasks.slice();
         renderTasks();
@@ -41,17 +87,17 @@ function loadTasks() {
         
         // Clean up
         document.head.removeChild(script);
-        delete window.handleTasksResponse;
+        delete window.handleResponse;
     };
     
     // Create JSONP request
     const script = document.createElement('script');
-    script.src = API_URL + '?callback=handleTasksResponse';
+    script.src = API_URL + '?action=getTasks&sheet=' + encodeURIComponent(currentSheet) + '&callback=handleResponse';
     script.onerror = function() {
-        showMessage('Ma\'lumot yuklab bo\'lmadi', 'error');
+        showMessage('Malumot yuklab bolmadi', 'error');
         showLoading(false);
         document.head.removeChild(script);
-        delete window.handleTasksResponse;
+        delete window.handleResponse;
     };
     
     document.head.appendChild(script);
@@ -183,7 +229,14 @@ function handleSubmit(e) {
 }
 
 function createTask(formData) {
+    if (!currentSheet) {
+        showMessage('Iltimos sheet tanlang', 'error');
+        return;
+    }
+    
     showMessage('Task yaratilmoqda...', 'info');
+    
+    formData.sheet = currentSheet;
     
     // AJAX so'rov yuborish
     const formBody = Object.keys(formData).map(function(key) {
@@ -229,6 +282,7 @@ function updateTask(taskId, formData) {
     
     formData.action = 'update';
     formData.id = taskId;
+    formData.sheet = currentSheet;
     
     const formBody = Object.keys(formData).map(function(key) {
         return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key]);
@@ -259,7 +313,8 @@ function deleteTask(taskId) {
     
     const formData = {
         action: 'delete',
-        id: taskId
+        id: taskId,
+        sheet: currentSheet
     };
     
     const formBody = Object.keys(formData).map(function(key) {
@@ -312,4 +367,81 @@ function showMessage(text, type) {
             messageDiv.style.display = 'none';
         }, 3000);
     }
+}
+
+// Sheet management functions
+function populateSheetSelector() {
+    const selector = document.getElementById('sheetSelector');
+    selector.innerHTML = '<option value="">Sheet tanlash...</option>';
+    
+    allSheets.forEach(function(sheet) {
+        const option = document.createElement('option');
+        option.value = sheet.name;
+        option.textContent = sheet.name;
+        selector.appendChild(option);
+    });
+}
+
+function handleSheetChange() {
+    const selectedSheet = document.getElementById('sheetSelector').value;
+    if (selectedSheet && selectedSheet !== currentSheet) {
+        currentSheet = selectedSheet;
+        currentPage = 1;
+        loadTasks();
+    }
+}
+
+function openSheetModal() {
+    document.getElementById('sheetModal').style.display = 'block';
+}
+
+function closeSheetModal() {
+    document.getElementById('sheetModal').style.display = 'none';
+    document.getElementById('sheetForm').reset();
+}
+
+function handleSheetSubmit(e) {
+    e.preventDefault();
+    
+    const sheetName = document.getElementById('sheetName').value.trim();
+    if (!sheetName) {
+        showMessage('Sheet nomini kiriting', 'error');
+        return;
+    }
+    
+    createSheet(sheetName);
+}
+
+function createSheet(sheetName) {
+    showMessage('Sheet yaratilmoqda...', 'info');
+    
+    const formData = {
+        action: 'createSheet',
+        sheetName: sheetName
+    };
+    
+    const formBody = Object.keys(formData).map(function(key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key]);
+    }).join('&');
+    
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody,
+        mode: 'no-cors'
+    }).then(function() {
+        showMessage('Sheet yaratildi!', 'success');
+        closeSheetModal();
+        setTimeout(function() {
+            loadSheets(); // Reload sheets to update selector
+        }, 1000);
+    }).catch(function(error) {
+        showMessage('Sheet yaratildi!', 'success');
+        closeSheetModal();
+        setTimeout(function() {
+            loadSheets();
+        }, 1000);
+    });
 }

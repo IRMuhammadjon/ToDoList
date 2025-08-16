@@ -10,7 +10,13 @@
     <div class="container">
         <header class="header">
             <h1>Task Manager Dashboard</h1>
-            <button class="btn-primary" id="createTaskBtn">+ Yangi Task</button>
+            <div class="header-actions">
+                <select id="sheetSelector" class="sheet-selector">
+                    <option value="">Sheet tanlash...</option>
+                </select>
+                <button class="btn-secondary" id="createSheetBtn">+ Yangi Sheet</button>
+                <button class="btn-primary" id="createTaskBtn">+ Yangi Task</button>
+            </div>
         </header>
         
         <div class="controls">
@@ -33,6 +39,26 @@
         </div>
 
         <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- Modal for Create Sheet -->
+    <div class="modal" id="sheetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yangi Sheet yaratish</h2>
+                <span class="close" id="closeSheetModal">&times;</span>
+            </div>
+            <form id="sheetForm">
+                <div class="form-group">
+                    <label for="sheetName">Sheet nomi:</label>
+                    <input type="text" id="sheetName" required placeholder="Masalan: Loyiha A, Haftalik vazifalar">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelSheetBtn">Bekor qilish</button>
+                    <button type="submit" class="btn-primary">Yaratish</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Modal for Create/Edit Task -->
