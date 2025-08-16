@@ -72,7 +72,7 @@ async function loadTasks() {
         
     } catch (error) {
         console.error('Task yuklashda xatolik:', error);
-        showMessage('Task yuklab bo\\'lmadi. Iltimos qaytadan urinib ko\\'ring.', 'error');
+        showMessage('Task yuklab bolmadi. Iltimos qaytadan urinib koring.', 'error');
         showLoading(false);
     }
 }
@@ -296,9 +296,9 @@ function updateTask(taskId, formData) {
 
 // Delete task
 function deleteTask(taskId) {
-    if (!confirm('Bu taskni o\\'chirishni xohlaysizmi?')) return;
+    if (!confirm('Bu taskni ochirishni xohlaysizmi?')) return;
     
-    showMessage('Task o\\'chirilmoqda...', 'info');
+    showMessage('Task ochirilmoqda...', 'info');
     
     const form = document.createElement('form');
     form.method = 'POST';
@@ -321,7 +321,7 @@ function deleteTask(taskId) {
     form.submit();
     document.body.removeChild(form);
     
-    showMessage('Task muvaffaqiyatli o\\'chirildi!', 'success');
+    showMessage('Task muvaffaqiyatli ochirildi!', 'success');
     
     // Refresh tasks after a delay
     setTimeout(loadTasks, 2000);
