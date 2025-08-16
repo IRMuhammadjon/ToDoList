@@ -84,35 +84,30 @@ function renderTasks() {
     const tasksToShow = filteredTasks.slice(startIndex, endIndex);
     
     if (tasksToShow.length === 0) {
-        taskList.innerHTML = `
-            <div class="empty-state">
-                <h3>Hech qanday task topilmadi</h3>
-                <p>Yangi task qo'shish uchun "Yangi Task" tugmasini bosing</p>
-            </div>
-        `;
+        taskList.innerHTML = '<div class="empty-state"><h3>Hech qanday task topilmadi</h3><p>Yangi task qoshish uchun "Yangi Task" tugmasini bosing</p></div>';
         pagination.innerHTML = '';
         return;
     }
     
-    const tasksHTML = tasksToShow.map(task => `
-        <div class="task-item">
-            <div class="task-header">
-                <div>
-                    <div class="task-title">${escapeHtml(task.title)}</div>
-                    <span class="task-priority priority-${task.priority.toLowerCase().replace(\"'\", \"\")}">${task.priority}</span>
-                </div>
-                <div class="task-actions">
-                    <button class="btn-edit" onclick="editTask(${task.id})">Tahrirlash</button>
-                    <button class="btn-danger" onclick="deleteTask(${task.id})">O'chirish</button>
-                </div>
-            </div>
-            ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
-            <div class="task-meta">
-                <span>Muddat: ${task.deadline || 'Belgilanmagan'}</span>
-                <span>Yaratilgan: ${task.created}</span>
-            </div>
-        </div>
-    `).join('');
+    const tasksHTML = tasksToShow.map(task => {
+        return '<div class="task-item">' +
+            '<div class="task-header">' +
+                '<div>' +
+                    '<div class="task-title">' + escapeHtml(task.title) + '</div>' +
+                    '<span class="task-priority priority-' + task.priority.toLowerCase().replace("'", "") + '">' + task.priority + '</span>' +
+                '</div>' +
+                '<div class="task-actions">' +
+                    '<button class="btn-edit" onclick="editTask(' + task.id + ')">Tahrirlash</button>' +
+                    '<button class="btn-danger" onclick="deleteTask(' + task.id + ')">Ochirish</button>' +
+                '</div>' +
+            '</div>' +
+            (task.description ? '<div class="task-description">' + escapeHtml(task.description) + '</div>' : '') +
+            '<div class="task-meta">' +
+                '<span>Muddat: ' + (task.deadline || 'Belgilanmagan') + '</span>' +
+                '<span>Yaratilgan: ' + task.created + '</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
     
     taskList.innerHTML = tasksHTML;
     renderPagination();
@@ -130,21 +125,21 @@ function renderPagination() {
     let paginationHTML = '';
     
     // Previous button
-    paginationHTML += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Oldingi</button>`;
+    paginationHTML += '<button ' + (currentPage === 1 ? 'disabled' : '') + ' onclick="changePage(' + (currentPage - 1) + ')">Oldingi</button>';
     
     // Page numbers
     for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage) {
-            paginationHTML += `<button class="active">${i}</button>`;
+            paginationHTML += '<button class="active">' + i + '</button>';
         } else if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
-            paginationHTML += `<button onclick="changePage(${i})">${i}</button>`;
+            paginationHTML += '<button onclick="changePage(' + i + ')">' + i + '</button>';
         } else if (i === currentPage - 3 || i === currentPage + 3) {
-            paginationHTML += `<button disabled>...</button>`;
+            paginationHTML += '<button disabled>...</button>';
         }
     }
     
     // Next button
-    paginationHTML += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Keyingi</button>`;
+    paginationHTML += '<button ' + (currentPage === totalPages ? 'disabled' : '') + ' onclick="changePage(' + (currentPage + 1) + ')">Keyingi</button>';
     
     pagination.innerHTML = paginationHTML;
 }
@@ -353,7 +348,7 @@ function showMessage(text, type) {
     
     // Auto hide success messages
     if (type === 'success' || type === 'info') {
-        setTimeout(() => {
+        setTimeout(function() {
             messageDiv.style.display = 'none';
         }, 3000);
     }
