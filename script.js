@@ -1,5 +1,5 @@
 // Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwNCmnae3f1gyYl4-wlVkvZRras9TqXvR-Cq2GAgqRi2T_aVw8_tEdZimfAwHIM1_k7g/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnWZBuRJ1J39pGP4wcqH8Ge_WOOodLL6UQYl_VmdellQLEX4BCe8vr8GYnGQOmjZETPQ/exec';
 
 // Global variables
 let allTasks = [];
