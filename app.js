@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbxwVB3t_rF3nRQ5rqhZKwnSbPOsruBpqINxAqjTdz88A-dPetSoJKq3xSOt5vfvd0EleA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyFoD2iRpM0svaHLYJp0tUMl8kAfIHUa5eQBG7Ey0-nwHTUY6WpAvu7IQ0YGt5CwwuScQ/exec';
 
 let allTasks = [];
 let filteredTasks = [];
@@ -32,21 +32,29 @@ function setupEvents() {
 function loadTasks() {
     showLoading(true);
     
-    fetch(API_URL)
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            allTasks = data || [];
-            filteredTasks = allTasks.slice();
-            renderTasks();
-            showLoading(false);
-        })
-        .catch(function(error) {
-            console.error('Error:', error);
-            showMessage('Xatolik yuz berdi', 'error');
-            showLoading(false);
-        });
+    // JSONP callback function
+    window.handleTasksResponse = function(data) {
+        allTasks = data || [];
+        filteredTasks = allTasks.slice();
+        renderTasks();
+        showLoading(false);
+        
+        // Clean up
+        document.head.removeChild(script);
+        delete window.handleTasksResponse;
+    };
+    
+    // Create JSONP request
+    const script = document.createElement('script');
+    script.src = API_URL + '?callback=handleTasksResponse';
+    script.onerror = function() {
+        showMessage('Ma\'lumot yuklab bo\'lmadi', 'error');
+        showLoading(false);
+        document.head.removeChild(script);
+        delete window.handleTasksResponse;
+    };
+    
+    document.head.appendChild(script);
 }
 
 function renderTasks() {
