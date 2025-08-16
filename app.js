@@ -188,7 +188,6 @@ function createTask(formData) {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = API_URL;
-    form.target = '_blank';
     
     Object.keys(formData).forEach(function(key) {
         const input = document.createElement('input');
@@ -230,7 +229,6 @@ function updateTask(taskId, formData) {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = API_URL;
-    form.target = '_blank';
     
     const actionInput = document.createElement('input');
     actionInput.type = 'hidden';
@@ -270,7 +268,6 @@ function deleteTask(taskId) {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = API_URL;
-    form.target = '_blank';
     
     const actionInput = document.createElement('input');
     actionInput.type = 'hidden';
