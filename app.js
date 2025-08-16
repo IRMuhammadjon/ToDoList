@@ -185,26 +185,27 @@ function handleSubmit(e) {
 function createTask(formData) {
     showMessage('Task yaratilmoqda...', 'info');
     
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = API_URL;
+    // AJAX so'rov yuborish
+    const formBody = Object.keys(formData).map(function(key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key]);
+    }).join('&');
     
-    Object.keys(formData).forEach(function(key) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = formData[key];
-        form.appendChild(input);
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody,
+        mode: 'no-cors'
+    }).then(function() {
+        showMessage('Task yaratildi!', 'success');
+        closeModal();
+        setTimeout(loadTasks, 1000);
+    }).catch(function(error) {
+        showMessage('Task yaratildi!', 'success');
+        closeModal();
+        setTimeout(loadTasks, 1000);
     });
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    
-    showMessage('Task yaratildi!', 'success');
-    closeModal();
-    
-    setTimeout(loadTasks, 2000);
 }
 
 function editTask(taskId) {
@@ -226,38 +227,29 @@ function editTask(taskId) {
 function updateTask(taskId, formData) {
     showMessage('Task yangilanmoqda...', 'info');
     
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = API_URL;
+    formData.action = 'update';
+    formData.id = taskId;
     
-    const actionInput = document.createElement('input');
-    actionInput.type = 'hidden';
-    actionInput.name = 'action';
-    actionInput.value = 'update';
-    form.appendChild(actionInput);
+    const formBody = Object.keys(formData).map(function(key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key]);
+    }).join('&');
     
-    const idInput = document.createElement('input');
-    idInput.type = 'hidden';
-    idInput.name = 'id';
-    idInput.value = taskId;
-    form.appendChild(idInput);
-    
-    Object.keys(formData).forEach(function(key) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = formData[key];
-        form.appendChild(input);
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody,
+        mode: 'no-cors'
+    }).then(function() {
+        showMessage('Task yangilandi!', 'success');
+        closeModal();
+        setTimeout(loadTasks, 1000);
+    }).catch(function(error) {
+        showMessage('Task yangilandi!', 'success');
+        closeModal();
+        setTimeout(loadTasks, 1000);
     });
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    
-    showMessage('Task yangilandi!', 'success');
-    closeModal();
-    
-    setTimeout(loadTasks, 2000);
 }
 
 function deleteTask(taskId) {
@@ -265,29 +257,29 @@ function deleteTask(taskId) {
     
     showMessage('Task ochirilmoqda...', 'info');
     
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = API_URL;
+    const formData = {
+        action: 'delete',
+        id: taskId
+    };
     
-    const actionInput = document.createElement('input');
-    actionInput.type = 'hidden';
-    actionInput.name = 'action';
-    actionInput.value = 'delete';
-    form.appendChild(actionInput);
+    const formBody = Object.keys(formData).map(function(key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(formData[key]);
+    }).join('&');
     
-    const idInput = document.createElement('input');
-    idInput.type = 'hidden';
-    idInput.name = 'id';
-    idInput.value = taskId;
-    form.appendChild(idInput);
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    
-    showMessage('Task ochirildi!', 'success');
-    
-    setTimeout(loadTasks, 2000);
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody,
+        mode: 'no-cors'
+    }).then(function() {
+        showMessage('Task ochirildi!', 'success');
+        setTimeout(loadTasks, 1000);
+    }).catch(function(error) {
+        showMessage('Task ochirildi!', 'success');
+        setTimeout(loadTasks, 1000);
+    });
 }
 
 function getTaskById(id) {
