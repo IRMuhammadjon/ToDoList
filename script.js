@@ -53,21 +53,22 @@ async function loadTasks() {
     try {
         showLoading(true);
         
-        // JSONP so'rovi Google Apps Script uchun
-        const script = document.createElement('script');
-        const callbackName = 'handleTasksResponse';
+        // Fetch bilan to'g'ridan-to'g'ri so'rov
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'GET',
+            mode: 'cors'
+        });
         
-        window[callbackName] = function(data) {
+        if (response.ok) {
+            const data = await response.json();
             allTasks = data || [];
             filteredTasks = [...allTasks];
             renderTasks();
-            showLoading(false);
-            document.head.removeChild(script);
-            delete window[callbackName];
-        };
+        } else {
+            throw new Error('Server xatoligi');
+        }
         
-        script.src = `${GOOGLE_SCRIPT_URL}?callback=${callbackName}`;
-        document.head.appendChild(script);
+        showLoading(false);
         
     } catch (error) {
         console.error('Task yuklashda xatolik:', error);
