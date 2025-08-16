@@ -1,5 +1,5 @@
 // Google Apps Script Web App URL (keyinroq sozlanadi)
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwNCmnae3f1gyYl4-wlVkvZRras9TqXvR-Cq2GAgqRi2T_aVw8_tEdZimfAwHIM1_k7g/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwz3WzDzidUOqclJO5pu7ira9iU_9AZRp5dHI-chAwAYbD6-oUPW5auFAzdEnWDuP_jsA/exec';
 
 document.getElementById('taskForm').addEventListener('submit', async function(e) {
     e.preventDefault();
